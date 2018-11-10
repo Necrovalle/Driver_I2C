@@ -1,0 +1,90 @@
+
+*************************************************************************************
+*                     MANUAL DE USO DEL DRIVER I2C PARA ARDUINO                     *
+*************************************************************************************
+
+Versión: 0.8 a
+fecha: Noviembre del 2018
+Por: Miguel Orozco
+
+
+- DESCRIPCIÓN -
+*************************************************************************************
+	Este firmware tiene el objetivo de convertir un Arduino en un driver que sea ca-
+-paz de adquirir lecturas analogas y digitales, así como escrituras digitales y con-
+-trolar esta informacion por medio del buz I2C, convirtiendo asi otro tipo de dispo-
+-sitivos, en dispositivos con comunicación I2C; para la implentación de este firmware
+se recomiendan las versiones de Arduino pro mini para trabajar en niveles de voltaje 
+de 3.3 volts y el Arduino mini para niveles de voltaje de 5 volts.
+
+
+- CONEXIONES -
+*************************************************************************************
+Alimentación y buz I2C:
+	Driver		Maestro
+	 A4   ---->   SDA
+	 A5   ---->   SCL
+	 GND  ---->   GND
+	 VCC  ----> 3.3V o 5V**
+
+** Segun la versión de arduino que se este empleando
+
+Entradas:
+	Analogica 0 ----> A0
+	Analogica 1 ----> A1
+	Analogica 2 ----> A2
+	Analogica 3 ----> A3
+	Digital 0   ----> pin 10
+	Digital 1   ----> pin 11
+
+Salidas:
+	Digital 0   ----> pin 12
+	Digital 1   ----> pin 13
+
+
+- DIRECCIÓN I2C -
+*************************************************************************************
+	La dirección, por defecto espesificada en el código del firmware es 0x01, la cual
+puede ser cambiada desde el mismo codigo o consultada por medio de petición de parame-
+-tros en una conexíon serial, tras el envio del caracter 'A', donde el driver enviara 
+la dierección I2C y le versión de firmware, la variable que contiene alojado el valor
+de la dirección esto detro del codigo es: <<contSalida>> y es a esta variable a la que
+se le tiene que asignar un nuevo valor si se desea programar otro driver.
+
+
+- COMANDOS DE PETICIÓN -
+*************************************************************************************
+Para lectura de analogos:
+	Analogo 1   ---->   0xA0
+	Analogo 2   ---->   0xA1
+	Analogo 3   ---->   0xA2
+	Analogo 4   ---->   0xA3
+
+Para lectura de digitales:
+	Digital 0   ---->   0xD0
+	Digital 1   ---->   0xD1
+
+Para escritura de digitales:
+	Digital 0 ON  ----> 0xE1
+	Digital 1 ON  ----> 0xF1
+	Digital 0 OFF ----> 0xE0
+	Digital 1 OFF ----> 0xF0
+
+Nota: Estos comandos ejecutal la tarea espsificada y preparan la información que sera
+consultada por el maestro.
+
+
+- RESPUESTA -
+*************************************************************************************
+	En todos los casos de peticiones, el driver prepara una entrega para ser consulta-
+-da por el maestro, la cual consiste en 2 bytes que contiene la información solicita-
+-da, en el caso de las lecturas digitales el primer byte son los bits mas signigicati-
+-vos de la trama leida por el ADC y el segundo byte son los bits menos significativos,
+en el caso de las lecturas digitales, la respuesta constara en el primer byte el valor
+de 68 ('D' en ASCII) y en el segundo byte el valor del estado que se encuentra esa en-
+-trada digital, para el caso de las escrituras digitales, en las 4 posibilidades el 
+driver retornara un 65 en el primer byte y un 75, correspondiendo a un "AK" en ASCII.
+ 
+
+
+
